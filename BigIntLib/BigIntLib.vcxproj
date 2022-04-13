@@ -153,6 +153,12 @@
   <ItemGroup>
     <ClCompile Include="BigIntLib.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BigIntLib.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\BigIntApp\TestNum.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
