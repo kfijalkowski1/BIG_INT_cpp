@@ -189,7 +189,11 @@ bool BigInt::operator==(BigInt const& d) const noexcept
 
 std::ostream& operator<<(std::ostream& os, const BigInt& d)
 {
-	os << d.myInt;
+	std::string numbers;
+	for (int i = 0; i < d.myInt.size(); i++) {
+		numbers += std::to_string(d.myInt[i]);
+	}
+	os << numbers;
 	return os;
 }
 

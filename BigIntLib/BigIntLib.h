@@ -4,6 +4,19 @@
 #include <fstream>
 #include <string>
 
+//template<typename BigInt>
+//class BigIntIterator
+//{
+//public:
+//	using ValueType = typename BigInt::ValueType;
+//	using PointerType = ValueType*;
+//	using ReferenceType = ValueType&;
+//public:
+//	VectorIterator(PointerType ptr)
+//		: m_Ptr(ptr) {}
+//private:
+//	PointerType m_Ptr;
+//};
 
 class BigInt {
 private:
@@ -11,7 +24,9 @@ private:
 	;
 	std::vector<int> myInt;
 	std::vector<int> balances; // if somewhere there is int that starts with 0, it shows the number of this int
-
+//public:
+//	using ValueType = int;
+//	using Iterator = BigIntIterator<BigInt<int>>;
 public:
 
 	BigInt();
@@ -40,13 +55,18 @@ public:
 	void operator-=(int const& d) noexcept;
 
 
-	//// compere operations, not making new object, returns a bool
+	// compere operations, not making new object, returns a bool
 	bool operator==(BigInt const& d) const noexcept;
-	//bool operator!=(BigInt const& d) const noexcept;
-	//bool operator>(BigInt const& d) const noexcept;
-	//bool operator<(BigInt const& d) const noexcept;
-	//bool operator<=(BigInt const& d) const noexcept;
-	//bool operator>=(BigInt const& d) const noexcept;
+
+	//// for iterator
+	//BigIntIterator begin()
+	//{
+	//	return BigIntIterator(myInt.begin());
+	//}
+	//BigIntIterator end()
+	//{
+	//	return BigIntIterator(myInt.end());
+	//}
 
 	//overloading stram operations for easier use in interface
 	friend std::ostream& operator<<(std::ostream& os, const BigInt& d);

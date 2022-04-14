@@ -232,5 +232,25 @@ namespace BigIntUnitTest
 			d -= d2;
 			Assert::IsTrue(d == a);
 		}
+		TEST_METHOD(TestOutputStream)
+		{
+			std::string number = "412347788888894315865";
+			BigInt d(number);
+			std::stringstream ss;
+			ss << d;
+			std::string s = ss.str();
+			std::string expect = "412347788888894315865";
+			Assert::AreEqual(expect, s);
+		}
+		TEST_METHOD(TestInputStream)
+		{
+			std::string number = "412347788888894315865";
+			BigInt e(number);
+			BigInt d;
+			std::stringstream ss;
+			ss << "412347788888894315865";
+			ss >> d;
+			Assert::IsTrue(e == d);
+		}
 	};
 }
