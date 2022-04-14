@@ -48,7 +48,7 @@ public:
 	//bool operator<=(BigInt const& d) const noexcept;
 	//bool operator>=(BigInt const& d) const noexcept;
 
-	////overloading stram operations for easier use in interface
-	//friend std::ostream& operator<<(std::ostream& os, const BigInt& d);
-	//friend std::istream& operator>>(std::istream& os, BigInt& d);
+	//overloading stram operations for easier use in interface
+	friend std::ostream& operator<<(std::ostream& os, const BigInt& d);
+	friend std::istream& operator>>(std::istream& is, BigInt& d);
 };

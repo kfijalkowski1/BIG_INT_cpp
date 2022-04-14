@@ -186,3 +186,17 @@ bool BigInt::operator==(BigInt const& d) const noexcept
 	}
 	return true;
 }
+
+std::ostream& operator<<(std::ostream& os, const BigInt& d)
+{
+	os << d.myInt;
+	return os;
+}
+
+std::istream& operator>>(std::istream& is, BigInt& d)
+{
+	std::string input;
+	is >> input;
+	d = BigInt(input);
+	return is;
+}
