@@ -2,6 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include<algorithm>
 #include "C:\Users\gambo\source\repos\BigIntApp\BigIntLib\BigIntLib.h"
 
 BigInt::BigInt()
@@ -25,53 +26,23 @@ BigInt::BigInt(const std::string number)
 		a = 1;
 	}
 	int e = 0;
-	for (std::string::size_type i = a; i < number.size(); i++) {
+	for (std::string::size_type i = number.size() - 1; i > a; i--) {
 		str_num += number[i];
 		if ((e + 1) % 7 == 0) {
+			std::reverse(str_num.begin(), str_num.end());
 			myInt.push_back(sign * stoi(str_num));
 			str_num.clear();
 		}
 		e++;
 	}
 	if (not str_num.empty()) {
+		str_num += number[a];
+		std::reverse(str_num.begin(), str_num.end());
 		myInt.push_back(sign * stoi(str_num));
 	}
+	std::reverse(myInt.begin(), myInt.end());
 	myInt.shrink_to_fit();
 }
-
-
-
-
-//int BigInt::getSign(BigInt const& d) const noexcept
-//// not multiplaxing coz can have results bigger than int
-//// 1 - both minus;
-//// 2 - object on the left on minus, on the right plus
-//// 3 - object on the left on plus, on the right minus
-//// 4 - both on plus
-//{
-//	if (myInt[0] < 0 && d.myInt[0] < 0) {
-//		return 1;
-//	}
-//	else if (myInt[0] < 0 && d.myInt[0] > 0) {
-//		return 2;
-//	}
-//	else if (myInt[0] > 0 && d.myInt[0] < 0) {
-//		return 3;
-//	}
-//	else {
-//		return 4;
-//	}
-//}
-
-//std::vector<int> BigInt::ChangeSign(std::vector<int> v) const noexcept
-//{
-//	std::vector<int> c;
-//	c = v;
-//	for (int a = 0; a < v.size(); ++a) {
-//		c[a] = v[a] * -1;
-//	}
-//	return c;
-//}
 
 std::vector<int> BigInt::getMyInt() const noexcept
 {
@@ -137,29 +108,22 @@ BigInt BigInt::operator+(BigInt const& d) const noexcept
 	return c;
 }
 
+std::vector<int> BigInt::ChangeSign(std::vector<int> v) const noexcept
+{
+	std::vector<int> c;
+	c = v;
+	for (int a = 0; a < v.size(); ++a) {
+		c[a] = v[a] * -1;
+	}
+	return c;
+}
+
 BigInt BigInt::operator-(BigInt const& d) const noexcept
 {
-	BigInt c;
-	std::vector<int> v1 = myInt;
-	std::vector<int> v2 = d.myInt;
-	int size_diff = v1.size() - v2.size();
-	if (size_diff >= 0) {
-		for (int i = v1.size(); i > v2.size(); i--) {
-			c.myInt.push_back(v1[i]);
-		}
-		for (int i = 0; i < v2.size(); i++) {
-			c.myInt.push_back(v1[i] - v2[i]);
-		}
-	}
-	else {
-		for (int i = v2.size(); i > v1.size(); i--) {
-			c.myInt.push_back(v2[i]);
-		}
-		for (int i = 0; i < v1.size(); i++) {
-			c.myInt.push_back(v2[i] - v1[i]);
-		}
-	}
-	c.balance();
+	BigInt c, d1, d2;
+	d1.myInt = myInt;
+	d2.myInt = ChangeSign(d.myInt);
+	c = d1 + d2;
 	return c;
 }
 
