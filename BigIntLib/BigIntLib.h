@@ -22,6 +22,7 @@ public:
 	//void choose_action(int const& d) const noexcept;
 	//int getSign(BigInt const& d) const noexcept;
 	std::vector<int> ChangeSign(std::vector<int> v) const noexcept;
+	std::vector<int> getMyInt() const noexcept;
 	
 
 

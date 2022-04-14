@@ -25,7 +25,7 @@ BigInt::BigInt(const std::string number)
 		a = 1;
 	}
 	int e = 0;
-	for (std::string::size_type i = a; i < (number.size() - a); i++) {
+	for (std::string::size_type i = a; i < number.size(); i++) {
 		str_num += number[i];
 		if ((e + 1) % 7 == 0) {
 			myInt.push_back(sign * stoi(str_num));
@@ -33,8 +33,10 @@ BigInt::BigInt(const std::string number)
 		}
 		e++;
 	}
-	myInt.push_back(sign * stoi(str_num));
-	//myInt.shrink_to_fit();
+	if (not str_num.empty()) {
+		myInt.push_back(sign * stoi(str_num));
+	}
+	myInt.shrink_to_fit();
 }
 
 
@@ -61,18 +63,26 @@ BigInt::BigInt(const std::string number)
 //	}
 //}
 
-std::vector<int> BigInt::ChangeSign(std::vector<int> v) const noexcept
+//std::vector<int> BigInt::ChangeSign(std::vector<int> v) const noexcept
+//{
+//	std::vector<int> c;
+//	c = v;
+//	for (int a = 0; a < v.size(); ++a) {
+//		c[a] = v[a] * -1;
+//	}
+//	return c;
+//}
+
+std::vector<int> BigInt::getMyInt() const noexcept
 {
-	std::vector<int> c;
-	c = v;
-	for (int a = 0; a < v.size(); ++a) {
-		c[a] = v[a] * -1;
-	}
-	return c;
+	return myInt;
 }
 
 int intLen(int num) {
 	int length = std::to_string(num).length();
+	if (num < 0) {
+		length--;
+	}
 	return length;
 }
 
@@ -88,15 +98,15 @@ void BigInt::balance()
 	for (int i = 1; i < myInt.size(); i++) {
 		if (intLen(myInt[i]) > 7) {
 			int diffrence = myInt[i] / 10000000; // 10^7
-			myInt[i - 1] += sign * (diffrence);
-			myInt[i] -= sign * (diffrence * 10000000);
+			myInt[i - 1] += diffrence;
+			myInt[i] -= diffrence * 10000000;
 		}
 	}
 	// secondly I chceck if somethink has diffrent sign then the gratest number
 	for (int i = 1; i < myInt.size(); i++) {
 		if (myInt[i] * sign < 0) {
 			myInt[i - 1] -= sign;
-			myInt[i] += 100000000 * sign;
+			myInt[i] += 10000000 * sign;
 		}
 	}
 }
