@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include<algorithm>
+#include <math.h>
 #include "C:\Users\gambo\source\repos\BigIntApp\BigIntLib\BigIntLib.h"
 
 BigInt::BigInt()
@@ -11,37 +12,74 @@ BigInt::BigInt()
 
 BigInt::BigInt(std::vector<int> ints)
 {
+	// for loop to assure that im not loading any negativ ints
+	for (int some_int : ints)
+	{
+		if (some_int < 0) {
+			some_int = -1 * some_int;
+			sign = -1;
+		}
+	}
 	myInt = ints;
 }
 
 BigInt::BigInt(const std::string number)
 {
-	// i try to keep int i number less than thair max size, so that i don't have problems with too big int-s
-	int count = (number.size() / 10);
-	std::string str_num;
-	int sign = 1;
-	int a = 0;
-	if (number[0] == '-') {
-		sign = -1;
-		a = 1;
-	}
-	int e = 0;
-	for (std::string::size_type i = number.size() - 1; i > a; i--) {
-		str_num += number[i];
-		if ((e + 1) % 7 == 0) {
-			std::reverse(str_num.begin(), str_num.end());
-			myInt.push_back(sign * stoi(str_num));
-			str_num.clear();
+	//I take int-s of 7  
+	//I start taking string at the lest important one becouse, the most imporatnt one has t be this shortest one
+	//becouse then, when doing operations I can extend the most imporant one but not so much the least important one
+	size_t current_pos = 0;
+	size_t additional = (number.length() - current_pos) % 7; //additional numbers that are to be the most important int
+	size_t no_ints = number.length() / 7;	// number of full numbers
+
+	//chceck if there is a sign
+	if (number[0] == '-' or number[0] == '+') {
+		if (number[0] == '-') {
+			sign = -1;
 		}
-		e++;
+		current_pos += 1;
 	}
-	if (not str_num.empty()) {
-		str_num += number[a];
-		std::reverse(str_num.begin(), str_num.end());
-		myInt.push_back(sign * stoi(str_num));
+
+	//get rid of 0 at the beggining
+	while(number[current_pos] == '0') {
+		current_pos++;
 	}
-	std::reverse(myInt.begin(), myInt.end());
-	myInt.shrink_to_fit();
+
+	//save this additional numbers -> the most important ones
+	if (additional > 0) {
+		std::string str_num = number.substr(current_pos, additional);
+		current_pos += additional;
+		myInt.push_back(stoi(str_num));
+	}
+
+	//save the rest of numbers
+	for (size_t i = 0; i < no_ints; i++) {
+		std::string str_num = number.substr(current_pos, 7);
+		current_pos += 7;
+		myInt.push_back(stoi(str_num));
+	}
+}
+
+std::vector<int> BigInt::addMod(BigInt b)
+{
+	// because it's a private function for my use, I make an assumption that myInt is bigger
+	// add mod just incrises the value by given biff BigInt
+	//i start at the least important int, so that overload is easier
+	int overload = 0;
+	for (int i = myInt.size(); i > (myInt.size() - b.myInt.size()); i--) {
+		if (overload > 0) {
+			myInt[i] += (b.myInt[i] + overload);
+			overload = 0;
+		}
+		else {
+			myInt[i] += b.myInt[i];
+		}
+		//here I check if my current int is too big
+		if (myInt[i] > 9999999) {
+			int overload = myInt[i] / pow(10, 7);
+			myInt[i] = myInt[i] % 10000000;
+		}
+	}
 }
 
 std::vector<int> BigInt::getMyInt() const noexcept
@@ -49,116 +87,41 @@ std::vector<int> BigInt::getMyInt() const noexcept
 	return myInt;
 }
 
-int intLen(int num) {
-	int length = std::to_string(num).length();
-	if (num < 0) {
-		length--;
-	}
-	return length;
+BigInt BigInt::copy()
+{
+	BigInt c(myInt);
+	c.sign = sign;
+	return c;
 }
 
-void BigInt::balance()
+void BigInt::operator+=(BigInt const& b) noexcept
 {
-	// situation where one int is at the same time bigger than others(8)
-	// and has a diffrent sign is not possible
-	int sign = 1;
-	if (myInt[0] < 0) {
-		sign = -1;
+	if (*this >= b) {
+		addMod(b);
 	}
-	// firstly I chceck the length of each int, if it is too great 
-	for (int i = 1; i < myInt.size(); i++) {
-		if (intLen(myInt[i]) > 7) {
-			int diffrence = myInt[i] / 10000000; // 10^7
-			myInt[i - 1] += diffrence;
-			myInt[i] -= diffrence * 10000000;
-		}
-	}
-	// secondly I chceck if somethink has diffrent sign then the gratest number
-	for (int i = 1; i < myInt.size(); i++) {
-		if (myInt[i] * sign < 0) {
-			myInt[i - 1] -= sign;
-			myInt[i] += 10000000 * sign;
-		}
+	else {
+
 	}
 }
 
 BigInt BigInt::operator+(BigInt const& d) const noexcept
 {
-	BigInt c;
-	std::vector<int> v1 = myInt;
-	std::vector<int> v2 = d.myInt;
-	int size_diff = v1.size() - v2.size();
-	if (size_diff >= 0) {
-		for (int i = v1.size(); i > v2.size(); i--) {
-			c.myInt.push_back(v1[i]);
-		}
-		for (int i = 0; i < v2.size(); i++) {
-			c.myInt.push_back(v1[i] + v2[i]);
-		}
-	}
-	else {
-		for (int i = v2.size(); i > v1.size(); i--) {
-			c.myInt.push_back(v2[i]);
-		}
-		for (int i = 0; i < v1.size(); i++) {
-			c.myInt.push_back(v2[i] + v1[i]);
-		}
-	}
-	c.balance();
-	return c;
-}
-
-std::vector<int> BigInt::ChangeSign(std::vector<int> v) const noexcept
-{
-	std::vector<int> c;
-	c = v;
-	for (int a = 0; a < v.size(); ++a) {
-		c[a] = v[a] * -1;
-	}
-	return c;
-}
-
-BigInt BigInt::operator-(BigInt const& d) const noexcept
-{
-	BigInt c, d1, d2;
-	d1.myInt = myInt;
-	d2.myInt = ChangeSign(d.myInt);
-	c = d1 + d2;
-	return c;
-}
-
-BigInt BigInt::operator+(int const& d) const noexcept
-{
-	BigInt c;
-	c.myInt = myInt;
-	c.myInt[myInt.size() - 1] += d;
-	c.balance();
-	return c;
-}
-
-BigInt BigInt::operator-(int const& d) const noexcept
-{
-	BigInt c;
-	c.myInt = myInt;
-	c.myInt[myInt.size() - 1] -= d;
-	c.balance();
-	return c;
-}
-
-void BigInt::operator+=(BigInt const& d) noexcept
-{
 	BigInt c(myInt);
-	c = c + d;
-	myInt = c.myInt;
-	balances = c.balances;
+	c += d;
+	return c;
 }
+
+void BigInt::ChangeSign() noexcept
+{
+	sign = (-1 * sign);
+}
+
 
 void BigInt::operator-=(BigInt const& d) noexcept
 {
 	BigInt c(myInt);
 	c = c - d;
 	myInt = c.myInt;
-	balances = c.balances;
 }
 
 void BigInt::operator+=(int const& d) noexcept
@@ -166,7 +129,6 @@ void BigInt::operator+=(int const& d) noexcept
 	BigInt c(myInt);
 	c = c + d;
 	myInt = c.myInt;
-	balances = c.balances;
 }
 
 void BigInt::operator-=(int const& d) noexcept
@@ -174,7 +136,6 @@ void BigInt::operator-=(int const& d) noexcept
 	BigInt c(myInt);
 	c = c - d;
 	myInt = c.myInt;
-	balances = c.balances;
 }
 
 bool BigInt::operator==(BigInt const& d) const noexcept
@@ -185,6 +146,58 @@ bool BigInt::operator==(BigInt const& d) const noexcept
 		}
 	}
 	return true;
+}
+
+bool BigInt::operator>(BigInt const& d) const noexcept
+{
+	if (myInt.size() > d.myInt.size()) {
+		return true;
+	}
+	for (int i = 0; i < myInt.size(); i++) {
+		if (myInt[i] > d.myInt[i]) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool BigInt::operator<(BigInt const& d) const noexcept
+{
+	if (myInt.size() < d.myInt.size()) {
+		return true;
+	}
+	for (int i = 0; i < myInt.size(); i++) {
+		if (myInt[i] < d.myInt[i]) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool BigInt::operator<=(BigInt const& d) const noexcept
+{
+	if (myInt.size() < d.myInt.size()) {
+		return true;
+	}
+	for (int i = 0; i < myInt.size(); i++) {
+		if (myInt[i] <= d.myInt[i]) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool BigInt::operator>=(BigInt const& d) const noexcept
+{
+	if (myInt.size() < d.myInt.size()) {
+		return true;
+	}
+	for (int i = 0; i < myInt.size(); i++) {
+		if (myInt[i] >= d.myInt[i]) {
+			return true;
+		}
+	}
+	return false;
 }
 
 std::ostream& operator<<(std::ostream& os, const BigInt& d)
