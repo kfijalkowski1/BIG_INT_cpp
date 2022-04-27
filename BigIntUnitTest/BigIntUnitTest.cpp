@@ -12,7 +12,7 @@ namespace BigIntUnitTest
 		
 		TEST_METHOD(VectorInit)
 		{
-			std::vector<int> ints;
+			std::vector<unsigned int> ints;
 			ints.push_back(4123478);
 			ints.push_back(1235675);
 			ints.push_back(4315865);
@@ -34,6 +34,7 @@ namespace BigIntUnitTest
 			Assert::AreEqual(a, 1267);
 			Assert::AreEqual(b, 8912378);
 			Assert::AreEqual(c, 9341208);
+			Assert::AreEqual(1, d.getSign());
 		}
 		TEST_METHOD(StringInitNegativ)
 		{
@@ -42,45 +43,22 @@ namespace BigIntUnitTest
 			int a = d.getMyInt()[0];
 			int b = d.getMyInt()[1];
 			int c = d.getMyInt()[2];
-			Assert::AreEqual(a, -1267);
-			Assert::AreEqual(b, -8912378);
-			Assert::AreEqual(c, -9341208);
+			Assert::AreEqual(a, 1267);
+			Assert::AreEqual(b, 8912378);
+			Assert::AreEqual(c, 9341208);
+			Assert::AreEqual(-1, d.getSign());
 		}
-		TEST_METHOD(BalanceTooLong)
+		TEST_METHOD(StringInitZeros)
 		{
-			std::string number = "412347912356754315865";
+			std::string number = "-0000126789123789341208";
 			BigInt d(number);
-			std::vector<int> ints;
-			ints.push_back(4123478);
-			ints.push_back(11235675);
-			ints.push_back(4315865);
-			BigInt e(ints);
-			e.balance();
-			Assert::IsTrue(d == e);
-		}
-		TEST_METHOD(BalanceNegativ)
-		{
-			std::string number = "412347788888894315865";
-			BigInt d(number);
-			std::vector<int> ints;
-			ints.push_back(4123478);
-			ints.push_back(-1111111);
-			ints.push_back(4315865);
-			BigInt e(ints);
-			e.balance();
-			Assert::IsTrue(d == e);
-		}
-		TEST_METHOD(BalanceWholeNegativ)
-		{
-			std::string number = "-412347788888894315865";
-			BigInt d(number);
-			std::vector<int> ints;
-			ints.push_back(-4123478);
-			ints.push_back(1111111);
-			ints.push_back(-4315865);
-			BigInt e(ints);
-			e.balance();
-			Assert::IsTrue(d == e);
+			int a = d.getMyInt()[0];
+			int b = d.getMyInt()[1];
+			int c = d.getMyInt()[2];
+			Assert::AreEqual(a, 1267);
+			Assert::AreEqual(b, 8912378);
+			Assert::AreEqual(c, 9341208);
+			Assert::AreEqual(-1, d.getSign());
 		}
 		TEST_METHOD(TestAddingPositiveSameLength)
 		{
@@ -90,10 +68,9 @@ namespace BigIntUnitTest
 			BigInt d(number);
 			BigInt d2(number2);
 			BigInt a(number3);
-			BigInt e;
-			e = d + d2;
-			Assert::IsTrue(a == e);
-		}
+			d += d2;
+			Assert::IsTrue(a == d);
+		}/*
 		TEST_METHOD(TestAddingNegativSameLength)
 		{
 			std::string number = "-412347788888894315865";
@@ -102,9 +79,8 @@ namespace BigIntUnitTest
 			BigInt d(number);
 			BigInt d2(number2);
 			BigInt a(number3);
-			BigInt e;
-			e = d + d2;
-			Assert::IsTrue(a == e);
+			d += d2;
+			Assert::IsTrue(a == d);
 		}
 		TEST_METHOD(TestAddingPositiveDiffrentLength)
 		{
@@ -114,9 +90,8 @@ namespace BigIntUnitTest
 			BigInt d(number);
 			BigInt d2(number2);
 			BigInt a(number3);
-			BigInt e;
-			e = d + d2;
-			Assert::IsTrue(a == e);
+			d += d2;
+			Assert::IsTrue(a == d);
 		}
 		TEST_METHOD(TestAddingNegativDiffrentLength)
 		{
@@ -126,9 +101,8 @@ namespace BigIntUnitTest
 			BigInt d(number);
 			BigInt d2(number2);
 			BigInt a(number3);
-			BigInt e;
-			e = d + d2;
-			Assert::IsTrue(a == e);
+			d += d2;
+			Assert::IsTrue(a == d);
 		}
 		TEST_METHOD(TestAddingNegativToPosoitivSameLength)
 		{
@@ -138,9 +112,8 @@ namespace BigIntUnitTest
 			BigInt d(number);
 			BigInt d2(number2);
 			BigInt a(number3);
-			BigInt e;
-			e = d + d2;
-			Assert::IsTrue(a == e);
+			d += d2;
+			Assert::IsTrue(a == d);
 		}
 		TEST_METHOD(TestAddingNegativToPosoitivDiffrentLength)
 		{
@@ -150,9 +123,8 @@ namespace BigIntUnitTest
 			BigInt d(number);
 			BigInt d2(number2);
 			BigInt a(number3);
-			BigInt e;
-			e = d + d2;
-			Assert::IsTrue(a == e);
+			d+= d2;
+			Assert::IsTrue(a == d);
 		}
 		TEST_METHOD(TestSubPosoitivSameLength)
 		{
@@ -251,6 +223,6 @@ namespace BigIntUnitTest
 			ss << "412347788888894315865";
 			ss >> d;
 			Assert::IsTrue(e == d);
-		}
+		}*/
 	};
 }

@@ -8,29 +8,22 @@
 class BigInt {
 private:
 	//ints have 7 in length (so that i can't overload int)
-	//storages the most important int at the begining(for example num: 1234567890) 1234567 would be at [0]
-	std::vector<int> myInt; 
+	//storages the most important int at the end(for example num: 1234567890) 1234567 would be at [1]
+	std::vector<unsigned int> myInt; 
 	int sign = 1;
-	void addMod(BigInt b);
-	void addModSmaller(BigInt b);
-	void subMod(BigInt b);
+	std::vector<unsigned int> addMod(std::vector<unsigned int> v1, std::vector<unsigned int> v2);
+	std::vector<unsigned int> subMod(std::vector<unsigned int> v1, std::vector<unsigned int> v2);
 public:
-
+	
 	BigInt();
-	BigInt(std::vector<int> ints);
-	BigInt(std::string number);
+	BigInt(std::vector<unsigned int> ints);
+	BigInt(std::string const& number);
 	void ChangeSign() noexcept;
-	std::vector<int> getMyInt() const noexcept;
-	BigInt copy();
+	std::vector<unsigned int> getMyInt() const noexcept;
+	int getSign() const noexcept;
+	BigInt copy() const noexcept;
 	
 	
-
-	// basic operators making new object
-	BigInt operator+(BigInt const& d) const noexcept;
-	BigInt operator-(BigInt const& d) const noexcept;
-	BigInt operator+(int const& d) const noexcept;
-	BigInt operator-(int const& d) const noexcept;
-
 
 	//operators making actions on the object itself
 	void operator+=(BigInt const& d) noexcept;
@@ -39,8 +32,18 @@ public:
 	void operator-=(int const& d) noexcept;
 
 
+
+	// basic operators making new object
+	BigInt operator+(BigInt const& d) const noexcept;
+	BigInt operator-(BigInt const& d) const noexcept;
+	BigInt operator+(int const& d) const noexcept;
+	BigInt operator-(int const& d) const noexcept;
+
+
+
 	// compere operations, not making new object, returns a bool
 	bool operator==(BigInt const& d) const noexcept;
+	bool operator!=(BigInt const& d) const noexcept;
 	bool operator>(BigInt const& d) const noexcept;
 	bool operator<(BigInt const& d) const noexcept;
 	bool operator>=(BigInt const& d) const noexcept;
