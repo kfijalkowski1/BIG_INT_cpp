@@ -11,6 +11,7 @@ private:
 	//storages the most important int at the end(for example num: 1234567890) 1234567 would be at [1]
 	std::vector<unsigned int> myInt; 
 	int sign = 1;
+	//two privat operators for adding and subtracting modules of numbers
 	std::vector<unsigned int> addMod(std::vector<unsigned int> v1, std::vector<unsigned int> v2);
 	std::vector<unsigned int> subMod(std::vector<unsigned int> v1, std::vector<unsigned int> v2);
 public:
