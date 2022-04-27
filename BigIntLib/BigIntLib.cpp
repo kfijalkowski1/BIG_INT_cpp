@@ -67,20 +67,16 @@ BigInt::BigInt(std::string const& number)
 
 std::vector<unsigned int> BigInt::addMod(std::vector<unsigned int> v1, std::vector<unsigned int> v2)
 {
-	// because it's a private function for my use, I make an assumption that v1 is bigger
-	// add mod just incrises the value by given biff BigInt
+	//because it's a private function for my use, I make an assumption that v1 is bigger
+	//add mod just incrises the value by given biff BigInt
 	//i start at the least important int, so that overload is easier
 	//the least important ones are at the beggining
 	int overload = 0;
-	int diff = v1.size() - v2.size();
-	for (int i = 0; i < v2.size(); i++) {
-		if (overload > 0) {
-			v1[i] += (v2[i - diff] + overload);
-			overload = 0;
-		}
-		else {
-			v1[i] += v2[i];
-		}
+	for (int i = 0; i < v2.size(); i++) 
+	{
+		v1[i] += (v2[i] + overload);
+		overload = 0;
+		
 		//here I check if my current int is too big
 		if (v1[i] > 9999999) {
 			overload = v1[i] / pow(10, 7);
@@ -94,17 +90,19 @@ std::vector<unsigned int> BigInt::subMod(std::vector<unsigned int> v1, std::vect
 {
 	//making an assuption that v1 is bigger than v2
 	int underload = 0;
-	int diff = v1.size() - v2.size();
 	int currentDif = 0;
-	for (int i = (v1.size() - 1); i >= diff; i--) {
-		v1[i] = v1[i] - underload;
+	for (int i = 0; i < v2.size(); i++) {
+		currentDif = v1[i] - v2[i] - underload;
 		underload = 0;
-		currentDif = v1[i] - v2[i - diff];
 		if (currentDif < 0) {
 			underload = 1;
 			currentDif += pow(10, 7);
 		}
 		v1[i] = currentDif;
+	}
+	if (underload == 1)
+	{
+		v1[v2.size()] = v1[v2.size()] - underload;
 	}
 	return v1;
 }
@@ -128,23 +126,28 @@ BigInt BigInt::copy() const noexcept
 }
 
 bool moduloBiggerEq(std::vector<unsigned int> v1, std::vector<unsigned int> v2) {
-	// returns true if v1 bigger or equal
+	// returns true if v1 bigger or equal, its a private method for making addition and subtracting easier
+	// most important at the end
 	if (v1.size() > v2.size()) {
 		return true;
 	}
-	for (int i = 0; i < v1.size(); i++) {
+	else if (v1.size() < v2.size()) {
+		return false;
+	}
+	for (int i = (v1.size() - 1); i >= 0; i--) {
 		if (v1[i] > v2[i]) {
 			return true;
 		}
+		if (v1[i] < v2[i]) {
+			return false;
+		}
 	}
-	if (v1[v1.size() - 1] == v2[v2.size() - 1]) {
-		return true;
-	}
-	return false;
+	return true;
 }
 
 void BigInt::operator+=(BigInt const& b) noexcept
 {
+	//equal signs -> adding modules
 	if ((sign * b.sign) == 1)
 	{
 		if (moduloBiggerEq(myInt, b.myInt)) {
@@ -154,19 +157,22 @@ void BigInt::operator+=(BigInt const& b) noexcept
 			myInt = addMod(b.myInt, myInt);
 		}
 	}
+	//diffrent signs -> subtracting modules
 	else {
 		if (moduloBiggerEq(myInt, b.myInt)) {
 			myInt = subMod(myInt, b.myInt);
 		}
 		else {
 			myInt = subMod(b.myInt, myInt);
+			this->ChangeSign();
+		}
 		}
 	}
-}
 
 
 void BigInt::operator-=(BigInt const& b) noexcept
 {
+	//firstly if sign are diffrent I have to add them
 	if (sign == 1 && b.sign == -1) {
 		BigInt c = b.copy();
 		c.sign = 1;
@@ -183,6 +189,7 @@ void BigInt::operator-=(BigInt const& b) noexcept
 		}
 		else {
 			myInt = subMod(b.myInt, myInt);
+			this->ChangeSign();
 		}
 	}
 }
@@ -257,78 +264,138 @@ bool BigInt::operator!=(BigInt const& d) const noexcept
 bool BigInt::operator>(BigInt const& d) const noexcept
 {
 	if (d.sign < sign) {
+		if (sign < 0) {
+			return false;
+		}
 		return true;
 	}
 	if (myInt.size() > d.myInt.size()) {
 		return true;
 	}
-	for (int i = 0; i < myInt.size(); i++) {
+	if (myInt.size() < d.myInt.size()) {
+		return false;
+	}
+	for (int i = (myInt.size() - 1); i >= 0; i--) {
 		if (myInt[i] > d.myInt[i]) {
+			if (sign < 0) {
+				return false;
+			}
 			return true;
+		}
+		else if (myInt[i] < d.myInt[i]) {
+			if (sign < 0) {
+				return true;
+			}
+			return false;
 		}
 	}
 	return false;
+	
 }
 
 bool BigInt::operator<(BigInt const& d) const noexcept
 {
-	if (sign < d.sign) {
-		return true;
+	if (d.sign < sign) {
+		if (sign < 0) {
+			return true;
+		}
+		return false;
+	}
+	if (myInt.size() > d.myInt.size()) {
+		return false;
 	}
 	if (myInt.size() < d.myInt.size()) {
 		return true;
 	}
-	for (int i = 0; i < myInt.size(); i++) {
+	for (int i = (myInt.size() - 1); i >= 0; i--) {
 		if (myInt[i] < d.myInt[i]) {
+			if (sign < 0) {
+				return false;
+			}
 			return true;
+		}
+		else if (myInt[i] > d.myInt[i]) {
+			if (sign < 0) {
+				return true;
+			}
+			return false;
 		}
 	}
 	return false;
+
 }
 
 bool BigInt::operator<=(BigInt const& d) const noexcept
 {
-	if (sign < d.sign) {
-		return true;
+	if (d.sign < sign) {
+		if (sign < 0) {
+			return true;
+		}
+		return false;
+	}
+	if (myInt.size() > d.myInt.size()) {
+		return false;
 	}
 	if (myInt.size() < d.myInt.size()) {
 		return true;
 	}
-	for (int i = 0; i < myInt.size(); i++) {
-		if (myInt[i] <= d.myInt[i]) {
+	for (int i = (myInt.size() - 1); i >= 0; i--) {
+		if (myInt[i] < d.myInt[i]) {
+			if (sign < 0) {
+				return false;
+			}
 			return true;
+		}
+		else if (myInt[i] > d.myInt[i]) {
+			if (sign < 0) {
+				return true;
+			}
+			return false;
 		}
 	}
-	if (myInt[myInt.size() - 1] == d.myInt[d.myInt.size() - 1]) {
-			return true;
-		}
-	return false;
+	return true;
 }
 
 bool BigInt::operator>=(BigInt const& d) const noexcept
 {
 	if (d.sign < sign) {
+		if (sign < 0) {
+			return false;
+		}
+		return true;
+	}
+	if (myInt.size() > d.myInt.size()) {
 		return true;
 	}
 	if (myInt.size() < d.myInt.size()) {
-		return true;
+		return false;
 	}
-	for (int i = 0; i < myInt.size(); i++) {
-		if (myInt[i] >= d.myInt[i]) {
+	for (int i = (myInt.size() - 1); i >= 0; i--) {
+		if (myInt[i] > d.myInt[i]) {
+			if (sign < 0) {
+				return false;
+			}
 			return true;
 		}
+		else if (myInt[i] < d.myInt[i]) {
+			if (sign < 0) {
+				return true;
+			}
+			return false;
+		}
 	}
-	if (myInt[myInt.size() - 1] == d.myInt[d.myInt.size() - 1]) {
-		return true;
-	}
-	return false;
+	return true;
 }
 
 std::ostream& operator<<(std::ostream& os, const BigInt& d)
 {
 	std::string numbers;
-	for (int i = 0; i < d.myInt.size(); i++) {
+	for (int i = (d.myInt.size() - 1); i >= 0; i--) {
 		numbers += std::to_string(d.myInt[i]);
+	}
+	if (d.sign == -1) {
+		os << '-' << numbers;
+		return os;
 	}
 	os << numbers;
 	return os;
