@@ -12,21 +12,20 @@ private:
 	std::vector<unsigned int> myInt; 
 	int sign = 1;
 	//two privat operators for adding and subtracting modules of numbers
-	std::vector<unsigned int> addMod(std::vector<unsigned int> v1, std::vector<unsigned int> v2);
+	std::vector<unsigned int> addMod(std::vector<unsigned int> const& v1, std::vector<unsigned int> const& v2) const;
 	std::vector<unsigned int> subMod(std::vector<unsigned int> v1, std::vector<unsigned int> v2);
 public:
 	
 	BigInt();
 	BigInt(std::vector<unsigned int> ints);
 	BigInt(std::string const& number);
+	BigInt(BigInt const& b);
 	void ChangeSign() noexcept;
 	std::vector<unsigned int> getMyInt() const noexcept;
 	int getSign() const noexcept;
-	BigInt copy() const noexcept;
 	
 	
 
-	//operators making actions on the object itself
 	void operator+=(BigInt const& d) noexcept;
 	void operator-=(BigInt const& d) noexcept;
 	void operator+=(int const& d) noexcept;
@@ -34,7 +33,6 @@ public:
 
 
 
-	// basic operators making new object
 	BigInt operator+(BigInt const& d) const noexcept;
 	BigInt operator-(BigInt const& d) const noexcept;
 	BigInt operator+(int const& d) const noexcept;
@@ -42,7 +40,7 @@ public:
 
 
 
-	// compere operations, not making new object, returns a bool
+	// compere operations
 	bool operator==(BigInt const& d) const noexcept;
 	bool operator!=(BigInt const& d) const noexcept;
 	bool operator>(BigInt const& d) const noexcept;

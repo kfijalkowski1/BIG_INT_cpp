@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <math.h>
+#include <iomanip>
 #include "C:\Users\gambo\source\repos\BigIntApp\BigIntLib\BigIntLib.h"
 
 BigInt::BigInt()
@@ -65,25 +66,57 @@ BigInt::BigInt(std::string const& number)
 	std::reverse(myInt.begin(), myInt.end());
 }
 
-std::vector<unsigned int> BigInt::addMod(std::vector<unsigned int> v1, std::vector<unsigned int> v2)
+std::vector<unsigned int> BigInt::addMod(std::vector<unsigned int> const& v1, std::vector<unsigned int> const& v2) const //TODO
 {
-	//because it's a private function for my use, I make an assumption that v1 is bigger
-	//add mod just incrises the value by given biff BigInt
+	//add mod returns new vecotor as a result
+	//doesn't metter if bigger as first or second
 	//i start at the least important int, so that overload is easier
 	//the least important ones are at the beggining
 	int overload = 0;
-	for (int i = 0; i < v2.size(); i++) 
+	std::vector<unsigned int> Vresult;
+	int i;
+	for (i = 0; i < v2.size() and i < v1.size(); i++)
 	{
-		v1[i] += (v2[i] + overload);
+		Vresult.push_back(v1[i] + v2[i] + overload);
 		overload = 0;
 		
 		//here I check if my current int is too big
-		if (v1[i] > 9999999) {
-			overload = v1[i] / pow(10, 7);
-			v1[i] = v1[i] % 10000000;
+		if (Vresult[i] > 9999999) {
+			overload = Vresult[i] / pow(10, 7);
+			Vresult[i] = Vresult[i] % 10000000;
 		}
 	}
-	return v1;
+
+	//for loop if v2 was bigger
+	for (; i < v2.size(); i++)
+	{
+		Vresult.push_back(v2[i] + overload);
+		overload = 0;
+		//here I check if my current int is too big
+		if (Vresult[i] > 9999999) {
+			overload = Vresult[i] / pow(10, 7);
+			Vresult[i] = Vresult[i] % 10000000;
+		}
+	}
+
+	//for loop if v1 was bigger
+	for (; i < v1.size(); i++)
+	{
+		Vresult.push_back(v1[i] + overload);
+		overload = 0;
+		//here I check if my current int is too big
+		if (Vresult[i] > 9999999) {
+			overload = Vresult[i] / pow(10, 7);
+			Vresult[i] = Vresult[i] % 10000000;
+		}
+	}
+
+	// if overload was at the end
+	if (!(overload == 0)) {
+		Vresult.push_back(overload);
+	}
+
+	return Vresult;
 }
 
 std::vector<unsigned int> BigInt::subMod(std::vector<unsigned int> v1, std::vector<unsigned int> v2)
@@ -118,11 +151,10 @@ int BigInt::getSign() const noexcept
 	return sign;
 }
 
-BigInt BigInt::copy() const noexcept
+BigInt::BigInt(BigInt const& b)
 {
-	BigInt c(myInt);
-	c.sign = sign;
-	return c;
+	myInt = b.myInt;
+	sign = b.sign;
 }
 
 bool moduloBiggerEq(std::vector<unsigned int> v1, std::vector<unsigned int> v2) {
@@ -150,12 +182,7 @@ void BigInt::operator+=(BigInt const& b) noexcept
 	//equal signs -> adding modules
 	if ((sign * b.sign) == 1)
 	{
-		if (moduloBiggerEq(myInt, b.myInt)) {
 			myInt = addMod(myInt, b.myInt);
-		}
-		else {
-			myInt = addMod(b.myInt, myInt);
-		}
 	}
 	//diffrent signs -> subtracting modules
 	else {
@@ -174,7 +201,7 @@ void BigInt::operator-=(BigInt const& b) noexcept
 {
 	//firstly if sign are diffrent I have to add them
 	if (sign == 1 && b.sign == -1) {
-		BigInt c = b.copy();
+		BigInt c(b);
 		c.sign = 1;
 		*this += c;
 	}
@@ -389,15 +416,13 @@ bool BigInt::operator>=(BigInt const& d) const noexcept
 
 std::ostream& operator<<(std::ostream& os, const BigInt& d)
 {
-	std::string numbers;
-	for (int i = (d.myInt.size() - 1); i >= 0; i--) {
-		numbers += std::to_string(d.myInt[i]);
-	}
 	if (d.sign == -1) {
-		os << '-' << numbers;
-		return os;
+		os << '-';
 	}
-	os << numbers;
+	os << d.myInt[d.myInt.size() - 1];
+	for (int i = (d.myInt.size() - 2); i >= 0; i--) {
+		os << std::setw(7) << std::setfill('0') << d.myInt[i];
+	}
 	return os;
 }
 
