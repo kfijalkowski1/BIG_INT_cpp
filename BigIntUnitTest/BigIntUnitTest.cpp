@@ -148,6 +148,40 @@ namespace BigIntUnitTest
 			d+= d2;
 			Assert::IsTrue(a == d);
 		}
+		//Overload tests
+		TEST_METHOD(TestAddingWithZerosDiffrentLength)
+		{
+			std::string number = "99999999999999";
+			std::string number2 = "1";
+			std::string number3 = "100000000000000";
+			BigInt d(number);
+			BigInt d2(number2);
+			BigInt a(number3);
+			d += d2;
+			Assert::IsTrue(a == d);
+		}
+		TEST_METHOD(TestAddingWithZerosOposideDiffrentLength)
+		{
+			std::string number = "1";
+			std::string number2 = "99999999999999";
+			std::string number3 = "100000000000000";
+			BigInt d(number);
+			BigInt d2(number2);
+			BigInt a(number3);
+			d += d2;
+			Assert::IsTrue(a == d);
+		}
+		TEST_METHOD(TestAddingWithZerosLongDiffrentLength)
+		{
+			std::string number = "1111111111111111111111";
+			std::string number2 = "412979999999999999932144";
+			std::string number3 = "414091111111111111043255";
+			BigInt d(number);
+			BigInt d2(number2);
+			BigInt a(number3);
+			d += d2;
+			Assert::IsTrue(a == d);
+		}
 		TEST_METHOD(TestSubPosoitivSameLength)
 		{
 			std::string number = "412347788888894315865";
@@ -323,6 +357,27 @@ namespace BigIntUnitTest
 			ss << d;
 			std::string s = ss.str();
 			std::string expect = "-412347788888894315865";
+			Assert::AreEqual(expect, s);
+		}
+		//tests output stream with zeros
+		TEST_METHOD(TestNegativZerosOutputStream)
+		{
+			std::string number = "-123470088888900000005";
+			BigInt d(number);
+			std::stringstream ss;
+			ss << d;
+			std::string s = ss.str();
+			std::string expect = "-123470088888900000005";
+			Assert::AreEqual(expect, s);
+		}
+		TEST_METHOD(TestZerosOutputStream)
+		{
+			std::string number = "123470088800000000005";
+			BigInt d(number);
+			std::stringstream ss;
+			ss << d;
+			std::string s = ss.str();
+			std::string expect = "123470088800000000005";
 			Assert::AreEqual(expect, s);
 		}
 		TEST_METHOD(TestInputStream)
